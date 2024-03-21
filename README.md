@@ -1,0 +1,1 @@
+# jscrambler-desktop
