@@ -62,6 +62,7 @@ ipcMain.on("obfuscate", async (event, jscramblerConfig) => {
         event.reply("obfuscate-complete", jscramblerConfig.outputDir);
     } catch (error) {
         console.error(`Obfuscation error: ${error.message}`);
+        event.reply("obfuscate-error", error.message);
     }
 });
 
