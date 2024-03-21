@@ -1,7 +1,6 @@
 // main.js
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const path = require("path");
-const execSync = require("child_process").execSync;
+const jscrambler = require("jscrambler").default;
 
 let mainWindow;
 
@@ -16,6 +15,7 @@ function createWindow() {
     });
 
     mainWindow.loadFile("index.html");
+    mainWindow.removeMenu();
 
     mainWindow.on("closed", function () {
         mainWindow = null;
@@ -36,24 +36,34 @@ app.on("activate", function () {
     }
 });
 
-ipcMain.on('obfuscate', (event, jscramblerConfig) => {
-    console.log('Start obfuscating the JS files...');
-  
+ipcMain.on("obfuscate", async (event, jscramblerConfig) => {
+    console.log("Start obfuscating the JS files...");
+
     try {
-      console.log(`Input Directory: ${jscramblerConfig.inputDir}`);
-      console.log(`Output Directory: ${jscramblerConfig.outputDir}`);
-      const inputDir = (jscramblerConfig.inputDir).replace(/\\/g, "/");
-      const outputDir = (jscramblerConfig.outputDir).replace(/\\/g, "/");
-      execSync(
-        `jscrambler -a ${jscramblerConfig.apiKey} -s ${jscramblerConfig.apiSecret} -i ${jscramblerConfig.appId} -o ${outputDir} ${inputDir}/*.js`
-      );
+        console.log(`Input Directory: ${jscramblerConfig.inputDir}`);
+        console.log(`Output Directory: ${jscramblerConfig.outputDir}`);
+        const inputDir = jscramblerConfig.inputDir.replace(/\\/g, "/");
+        const outputDir = jscramblerConfig.outputDir.replace(/\\/g, "/");
+
+        await jscrambler.protectAndDownload({
+            keys: {
+                accessKey: jscramblerConfig.apiKey,
+                secretKey: jscramblerConfig.apiSecret,
+            },
+            applicationId: jscramblerConfig.appId,
+            host: "api4.jscrambler.com",
+            port: 443,
+            filesDest: outputDir,
+            filesSrc: [`${inputDir}/**/*.js`],
+            // Include any other JScrambler protection parameters here
+            // Example: params: [...]
+        });
+        console.log("Obfuscation complete");
+        event.reply("obfuscate-complete", jscramblerConfig.outputDir);
     } catch (error) {
-      console.error(`Obfuscation error: ${error.message}`);
+        console.error(`Obfuscation error: ${error.message}`);
     }
-  
-    console.log('Obfuscation complete');
-    event.reply('obfuscate-complete', jscramblerConfig.outputDir);
-  });
+});
 
 ipcMain.on("select-input-directory", async (event) => {
     const result = await dialog.showOpenDialog(mainWindow, {
