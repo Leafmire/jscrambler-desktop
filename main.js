@@ -1,6 +1,7 @@
 // main.js
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const jscrambler = require("jscrambler").default;
+require('events').EventEmitter.defaultMaxListeners = 15;
 
 let mainWindow;
 
@@ -61,8 +62,8 @@ ipcMain.on("obfuscate", async (event, jscramblerConfig) => {
         console.log("Obfuscation complete");
         event.reply("obfuscate-complete", jscramblerConfig.outputDir);
     } catch (error) {
-        console.error(`Obfuscation error: ${error.message}`);
-        event.reply("obfuscate-error", error.message);
+        console.error(`Obfuscation error: ${error}`);
+        event.reply("obfuscate-error", error);
     }
 });
 

@@ -35,6 +35,9 @@ obfuscateBtn.addEventListener("click", () => {
     selectInputDirBtn.disabled = true;
     selectOutputDirBtn.disabled = true;
 
+    // obfuscateBtn text to "Obfuscating..."
+    obfuscateBtn.innerText = "Obfuscating...";
+
     ipcRenderer.send("obfuscate", jscramblerConfig);
 });
 
@@ -46,12 +49,18 @@ ipcRenderer.on("obfuscate-complete", (event, outputDir) => {
     selectInputDirBtn.disabled = false;
     selectOutputDirBtn.disabled = false;
 
+    // obfuscateBtn text to "Obfuscate"
+    obfuscateBtn.innerText = "Obfuscate";
+
     // output 디렉토리 열기
     shell.openPath(outputDir);
 });
 
 ipcRenderer.on("obfuscate-error", (event, error) => {
     alert(`An error occurred: ${error}`);
+
+    // obfuscateBtn text to "Obfuscate"
+    obfuscateBtn.innerText = "Obfuscate";
 
     // 버튼 활성화
     obfuscateBtn.disabled = false;
