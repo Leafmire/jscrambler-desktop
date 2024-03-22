@@ -8,7 +8,6 @@ A desktop application for obfuscating JavaScript files using JScrambler. It prov
 - Configure JScrambler settings (API Key, API Secret, App ID)
 - Perform JavaScript obfuscation using JScrambler
 - Automatically open the output directory upon completion
-- Cross-platform compatibility (Windows, macOS, Linux)
 
 ## Prerequisites
 
